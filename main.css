@@ -75,3 +75,22 @@ h1{
 .tictactoe-container-item:nth-child(9){
     grid-area: 3 / 3 / span 1 / span 1;
 }
+
+.score-flex-container{
+    display:flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+
+#reset{
+    background-color:black;
+    color:red;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+.reset-flex-container{
+    display:flex;
+    justify-content: center;
+}
