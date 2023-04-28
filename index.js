@@ -37,7 +37,8 @@ function stopGame(){
     })
 }
 
-function determineWinner(){
+function hasWinner(){
+    let isWinnerDetermined = false;
     for(let outcome of possibleOutcomes){
         let row = new Array();
         row.push(cells[outcome[0]]);
@@ -49,19 +50,20 @@ function determineWinner(){
             userScoreElement.innerHTML = userScore;
             threeInARow("User");
             stopGame();
-            break;
+            isWinnerDetermined = true;
         }
         else if(isFilled(row[0], cross) && isFilled(row[1], cross) && isFilled(row[2], cross)){
             computerScore++;
             compScoreElement.innerHTML = computerScore;
             threeInARow("Computer");
             stopGame();
-            break;
+            isWinnerDetermined = true;
         }
         else{
             continue;
         }
     }
+    return isWinnerDetermined;
 }
 
 function threeInARow(winner){
@@ -93,30 +95,27 @@ function getRandomCell(cellLength){
 }
 
 function isGameOver(){
-    determineWinner();
-    if(turns >= 9){
+    var isWinnerDetermined = hasWinner();
+    if(turns >= 9 || isWinnerDetermined){
         console.log("End of game.");
         return true;
     }
 }
 
 function getEmptyCells(cell){
-    return cell.innerHTML !== nought && cell.innerHTML !== cross
+    return cell.v.innerHTML !== nought && cell.v.innerHTML !== cross
 }
 
 function compTurn(){
     if(isGameOver()){
         return;
     }
-    let emptyCells = cells.filter(getEmptyCells);
+    let emptyCells = cells
+    .map((v, i) => ({v, i}))
+    .filter(getEmptyCells);
 
-    let randomCell = getRandomCell(emptyCells.length);
+    let randomCell = emptyCells[getRandomCell(emptyCells.length)].i;
 
-    
-    while(cells[randomCell].innerHTML == nought || cells[randomCell].innerHTML == cross){
-        emptyCells = cells.filter(getEmptyCells);
-        randomCell = getRandomCell(emptyCells.length);
-    }
     turns++;
     cells[randomCell].disabled = true;
     cells[randomCell].innerHTML = cross;
