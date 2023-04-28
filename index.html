@@ -12,21 +12,23 @@
     <body>
         <h1>Tic Tac Toe</h1>
 
-        <section class="tictactoe-container">
+        <section class="tictactoe-container" id="grid">
 
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
+            <div class="tictactoe-container-item cell" data-cell="1"></div>
+            <div class="tictactoe-container-item cell" data-cell="2"></div>
+            <div class="tictactoe-container-item cell" data-cell="3"></div>
 
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
+            <div class="tictactoe-container-item cell" data-cell="4"></div>
+            <div class="tictactoe-container-item cell" data-cell="5"></div>
+            <div class="tictactoe-container-item cell" data-cell="6"></div>
 
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
-            <div class="tictactoe-container-item"><img src="" hidden></div>
+            <div class="tictactoe-container-item cell" data-cell="7"></div>
+            <div class="tictactoe-container-item cell" data-cell="8"></div>
+            <div class="tictactoe-container-item cell" data-cell="9"></div>
 
         </section>
+
+        <h1 id="winner-toast" hidden></h1>
 
         <section class="score-flex-container">
             <div class="score-flex-item">UserScore: <span id="userScore">0</span></div>
@@ -34,6 +36,7 @@
         </section>
 
         <section class="reset-flex-container">
+            <button id="continue" class="reset-flex-item">Continue</button>
             <button id="reset" class="reset-flex-item">Reset</button>
         </section>
     </body>
