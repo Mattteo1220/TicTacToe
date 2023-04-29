@@ -98,7 +98,10 @@ function isFilled(cell, value){
     return cell.innerHTML === value;
 }
 
-cells.forEach(c => c.addEventListener("click", function(){
+cells.forEach(c => c.addEventListener("click", function(event){
+    if(isCompTurn){
+        event.preventDefault();
+    }
     if(c.innerHTML === cross){
         return;
     }
@@ -111,6 +114,8 @@ cells.forEach(c => c.addEventListener("click", function(){
     if(isGameOver()){
         return;
     }
+    isUserTurn = false;
+    isCompTurn = true;
 }));
 
 function getRandomCell(cellLength){
@@ -160,8 +165,11 @@ function fillRandomCell(){
     fillCross(randomCell);
 }
 
-function compTurn(){
+function compTurn(event){
     
+    if(isUserTurn){
+        event.preventDefault();
+    }
     if(turns >= 2){
         strategize();
     }
@@ -173,6 +181,8 @@ function compTurn(){
     if(isGameOver()){
         return;
     }
+    isUserTurn = true;
+    isCompTurn = false;
 }
 
 reset.addEventListener("click", () => {
@@ -190,8 +200,6 @@ reset.addEventListener("click", () => {
 
 continueElement.addEventListener("click", () => {
     turns = 0;
-    userScore = 0;
-    computerScore = 0;
 
     cells.forEach(c => c.innerHTML = null);
     cells.forEach(c => c.style.backgroundColor = "turquoise");
