@@ -109,13 +109,14 @@ cells.forEach(c => c.addEventListener("click", function(event){
     c.style.backgroundColor = "#ff726f";
     c.disabled = true;
     turns++;
-    let timeout = Math.floor(Math.random() * 1500);
-    setTimeout(compTurn, timeout);
     if(isGameOver()){
         return;
     }
     isUserTurn = false;
     isCompTurn = true;
+    let timeout = Math.floor(Math.random() * 1500);
+    setTimeout(compTurn, timeout);
+    
 }));
 
 function getRandomCell(cellLength){
