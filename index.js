@@ -5,6 +5,11 @@ let isCompTurn = false;
 let computerScore = 0;
 let userScore = 0;
 let turns = 0;
+let playerTypes = {
+    None : 0,
+    User : 1,
+    Computer : 2
+}
 let possibleOutcomes = [
     //horizontal
     [0,1,2],
@@ -28,6 +33,32 @@ let winnerToast = document.getElementById("winner-toast");
 let userScoreElement = document.getElementById("userScore");
 let compScoreElement = document.getElementById("compScore");
 
+function strategize(){
+    for(let outcome of possibleOutcomes){
+        let row = new Array();
+        row.push(cells[outcome[0]]);
+        row.push(cells[outcome[1]]);
+        row.push(cells[outcome[2]]);
+
+        if((!isFilled(row[0], nought) && !isFilled(row[0], cross)) && isFilled(row[1], nought) && isFilled(row[2], nought)){
+            fillCross(outcome[0]);
+            return;
+        }
+        else if(isFilled(row[0], nought) && (!isFilled(row[1], nought) && !isFilled(row[1], cross)) && isFilled(row[2], nought)){
+            fillCross(outcome[1]);
+            return;
+        }
+        else if(isFilled(row[0], nought) && isFilled(row[1], nought) && (!isFilled(row[2], nought)  && !isFilled(row[2], cross))){
+            fillCross(outcome[2]);
+            return;
+        }
+        else{
+            continue;
+        }
+    } 
+    fillRandomCell();//Only fill if nothing works out above.
+}
+
 function stopGame(){
     cells.forEach(c => {
         c.style.opacity = 0.3;
@@ -38,7 +69,7 @@ function stopGame(){
 }
 
 function hasWinner(){
-    let isWinnerDetermined = false;
+    let winner = playerTypes.None;
     for(let outcome of possibleOutcomes){
         let row = new Array();
         row.push(cells[outcome[0]]);
@@ -46,24 +77,16 @@ function hasWinner(){
         row.push(cells[outcome[2]]);
 
         if(isFilled(row[0], nought) && isFilled(row[1], nought) && isFilled(row[2], nought)){
-            userScore++;
-            userScoreElement.innerHTML = userScore;
-            threeInARow("User");
-            stopGame();
-            isWinnerDetermined = true;
+            winner = playerTypes.User;
         }
         else if(isFilled(row[0], cross) && isFilled(row[1], cross) && isFilled(row[2], cross)){
-            computerScore++;
-            compScoreElement.innerHTML = computerScore;
-            threeInARow("Computer");
-            stopGame();
-            isWinnerDetermined = true;
+            winner = playerTypes.Computer;
         }
         else{
             continue;
         }
     }
-    return isWinnerDetermined;
+    return winner;
 }
 
 function threeInARow(winner){
@@ -76,9 +99,6 @@ function isFilled(cell, value){
 }
 
 cells.forEach(c => c.addEventListener("click", function(){
-    if(isGameOver()){
-        return;
-    }
     if(c.innerHTML === cross){
         return;
     }
@@ -86,8 +106,11 @@ cells.forEach(c => c.addEventListener("click", function(){
     c.style.backgroundColor = "#ff726f";
     c.disabled = true;
     turns++;
-    let timeout = Math.ceil(Math.random() * 10);
+    let timeout = Math.floor(Math.random() * 1500);
     setTimeout(compTurn, timeout);
+    if(isGameOver()){
+        return;
+    }
 }));
 
 function getRandomCell(cellLength){
@@ -95,10 +118,26 @@ function getRandomCell(cellLength){
 }
 
 function isGameOver(){
-    var isWinnerDetermined = hasWinner();
-    if(turns >= 9 || isWinnerDetermined){
+    var winner = hasWinner();
+    if((turns == 9 && winner != playerTypes.None) || (turns <= 9 && winner != playerTypes.None)){
+        if(winner === playerTypes.User){
+            userScore++;
+            userScoreElement.innerHTML = userScore;
+            threeInARow("User");
+            stopGame();
+        }
+        else{
+            computerScore++;
+            compScoreElement.innerHTML = computerScore;
+            threeInARow("Computer");
+            stopGame();
+        }
         console.log("End of game.");
         return true;
+    }
+    else if(turns == 9 && !winner){
+        winnerToast.hidden = false;
+        winnerToast.innerHTML = "Tie. Please try again!";
     }
 }
 
@@ -106,20 +145,34 @@ function getEmptyCells(cell){
     return cell.v.innerHTML !== nought && cell.v.innerHTML !== cross
 }
 
-function compTurn(){
-    if(isGameOver()){
-        return;
-    }
-    let emptyCells = cells
-    .map((v, i) => ({v, i}))
-    .filter(getEmptyCells);
-
-    let randomCell = emptyCells[getRandomCell(emptyCells.length)].i;
-
-    turns++;
+function fillCross(randomCell){
     cells[randomCell].disabled = true;
     cells[randomCell].innerHTML = cross;
     cells[randomCell].style.backgroundColor = "#ffec82";
+}
+
+function fillRandomCell(){
+    let emptyCells = cells
+        .map((v, i) => ({v, i}))
+        .filter(getEmptyCells);
+
+    let randomCell = emptyCells[getRandomCell(emptyCells.length)].i;
+    fillCross(randomCell);
+}
+
+function compTurn(){
+    
+    if(turns >= 2){
+        strategize();
+    }
+    else{
+        fillRandomCell();
+    }
+
+    turns++;
+    if(isGameOver()){
+        return;
+    }
 }
 
 reset.addEventListener("click", () => {
@@ -137,6 +190,9 @@ reset.addEventListener("click", () => {
 
 continueElement.addEventListener("click", () => {
     turns = 0;
+    userScore = 0;
+    computerScore = 0;
+
     cells.forEach(c => c.innerHTML = null);
     cells.forEach(c => c.style.backgroundColor = "turquoise");
     cells.forEach(c => c.style.opacity = 1);
